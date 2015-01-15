@@ -33,8 +33,8 @@ serverdbuser are host server ip, database name, database password and database u
 		serverdbuser=dbuser
 		serverdbpass=password
 
-All the above fields are required to put into csclient.ini file and should be put on CSclient folder
-under AppData\Local directory.
+	All the above fields are required to put into csclient.ini file and should be put on CSclient folder
+	under AppData\Local directory.
 
 4. CasparCG Configuration:
 	If you want to make sure that after a system failure, if you want to make it available from where
