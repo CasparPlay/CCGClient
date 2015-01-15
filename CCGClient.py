@@ -1,8 +1,25 @@
 #-*- coding: UTF-8 -*-
+
 '''
-CCClient.py - Written by Md. Rakib Hassan Mullick <rakib.mullick@sysnova.com>, Sysnova Information Sys Ltd.
-This program is written to send instruction to CasparCG Server; requests will be fetched from database.
-mysql db used - MySQL-python-1.2.4b4.win32-py2.7 taken from http://sourceforge.net/projects/mysql-python
+CCClient.py - A BackToBack client for CasparCG Server. Written by
+Md. Rakib Hassan Mullick <rakib.mullick@sysnova.com>.
+
+Copyright (C) 2015, Sysnova Information Systems Ltd.
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+This program is written to send commands to CasparCG Server; requests
+will be fetched from database. mysql db is used -
+	* MySQL-python-1.2.4b4.win32-py2.7 taken from following url -
+		http://sourceforge.net/projects/mysql-python
 '''
 
 import socket, os, string
