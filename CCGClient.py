@@ -310,7 +310,7 @@ def playoutHandler(val):
 		pcmd = "loadbg 1-10 %s seek %d auto\r\n" % (buddynowplaying, int(seekt))
 		SendToServer(sock, pcmd)
 		if isbuddyplayingcommercial == '0':
-			SendToServer(sock, "loadbg 1-11 logo1 auto\r\n")
+			SendToServer(sock, "loadbg 1-11 logo auto\r\n")
 		else:
 			logooff = True
 
@@ -361,7 +361,7 @@ def playoutHandler(val):
 					clearCG()
 					cgrunning = False
 			if commercial == '0' and logooff == False:
-				SendToServer(sock, "loadbg 1-11 logo1 auto\r\n")
+				SendToServer(sock, "loadbg 1-11 logo auto\r\n")
 				logooff = False
 			SendToServer(sock, pcmd)
 			UpdateDb(name, id, '1')
@@ -395,7 +395,7 @@ def playoutHandler(val):
 			sleeptime = OSCGetSleepTime(name) #ConvertToSec(hour, min, sec)
 			UpdateDb(name, id, '1')
 			if commercial == '0' and logooff == True:
-				SendToServer(sock, "loadbg 1-11 logo1 auto\r\n")
+				SendToServer(sock, "loadbg 1-11 logo auto\r\n")
 				logooff = False
 				cgSendCmd(0)
 			if cgrunning == True and commercial == '1':
