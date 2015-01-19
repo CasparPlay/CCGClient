@@ -34,7 +34,8 @@ serverdbuser are host server ip, database name, database password and database u
 		serverdbpass=password
 
 	All the above fields are required to put into csclient.ini file and should be put on CSclient folder
-	under AppData\Local directory.
+	under AppData\Local directory. Also make sure to keep the tv logo file as name "logo" under media
+	directory of CasparCG server.
 
 4. CasparCG Configuration:
 	If you want to make sure that after a system failure, if you want to make it available from where
