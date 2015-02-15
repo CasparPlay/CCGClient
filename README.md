@@ -55,7 +55,14 @@ which should be created after then.
 
 7. Newscoop Integration:
 	Newscoop is a free and open source multilingual content management system for news websites. CCGClient is
-capable of fetching news headlines from newscoop database and can use it as text scroller.
+capable of fetching news headlines from newscoop database and can use it as text scroller. To configure newscoop
+with CCGClient fill the following lines with appropriate values:
+		newscoophost=
+		newscooppass=
+		newscoopuser=
+		newscoopdb=
+newscoophost is the ip address of the newscoop database server whereas newscooppass, newscoopuser, newscoopdb
+are password, username and database name of newscoop database respectively.
 
 TODO:	a/ Database table creation automation.
 		b/ Various code cleanup is also required.
