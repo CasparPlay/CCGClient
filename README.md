@@ -51,5 +51,9 @@ best cast we found near about 0.1 sec lag.
 	Script will create a CasparCG database if already not created. schema.txt file contains the table schema
 which should be created after then.
 
+7. Newscoop Integration:
+	Newscoop is a free and open source multilingual content management system for news websites. CCGClient is
+capable of fetching news headlines from newscoop database and can use it as text scroller.
+
 TODO:	a/ Database table creation automation.
-	b/ Various code cleanup is also required.
+		b/ Various code cleanup is also required.

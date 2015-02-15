@@ -1,5 +1,4 @@
 #-*- coding: UTF-8 -*-
-
 '''
 CCClient.py - A BackToBack client for CasparCG Server. Written by
 Md. Rakib Hassan Mullick <rakib.mullick@sysnova.com>.
@@ -56,6 +55,12 @@ osct1 = 0.0
 osct2 = 0.0
 commercialtimelist = []
 clearcgstatus = 0
+newscoophost=''
+newscooppass=''
+newscoopuser=''
+newscoopdb=''
+header = "<?xml version=\"1.0\" encoding=\"utf-16\" standalone=\"yes\"?>\n <NewScrollData>\n"
+footer = "</NewScrollData>"
 
 def CreateClient():
 		sock = socket.create_connection(('localhost', 5250))
@@ -77,9 +82,13 @@ def clearCG():
 		SendToServer(sock, cmd)
 		clearcgstatus = 0
 		cgupdate = 0
-		
+
+'''
+This function basically used to control what to be shown on text scroller. They
+are basically distinguished between commercial and non-commercial.
+'''
 def cgSendCmd(commercial):
-	global cgupdate, cgrunning
+	global cgupdate, cgrunning, sock
 	
 	str = "CG 1 ADD 10 \"AKCESS_CG/Templates/AKCESS\" 1 "
 	str = str + "\"<templateData>"
@@ -101,7 +110,9 @@ def cgSendCmd(commercial):
 	str = str + "\"SetSpeed\\\">"
 	str = str + "<data id=\\" + "\"text\\\"" + " value=\\" + "\"3\\\" />" + "</componentData>"
 	str = str + "</templateData>" + "\r\n"
-	
+
+	if cgupdate == 1:
+		clearCG()
 	SendToServer(sock, str)
 	cgupdate = 1
 	cgrunning = True
@@ -462,7 +473,6 @@ def CheckBuddyPlayList():
 		isbuddydbrunning = False
 		print "Make Sure Buddy DB is on"
 		pass
-	
 '''
 	* GetCurrentTime
 	* Find all the programs yet to be scheduled later than currenttime
@@ -666,23 +676,18 @@ def ReadConFile():
 			if array[0] == 'buddydbname':
 				global buddydbname
 				buddydbname = array[1].rstrip('\n')
-				#print buddydbname
 				continue
 			if array[0] == 'buddydbuser':
 				global buddydbuser
 				buddydbuser = array[1].rstrip('\n')
-				#print buddydbuser
 				continue
 			if array[0] == 'buddydbpass':
 				global buddydbpass
 				buddydbpass = array[1].rstrip('\n')
-				#print buddydbpass
 				continue
 			if array[0] == 'serverip':
 				global serverip
-				#array = ret.split('=')
 				serverip = array[1].rstrip('\n')
-				#print "serverip is: ", serverip[len(serverip)-2]
 				continue
 			if array[0] == 'serverdbname':
 				global serverdbname
@@ -703,6 +708,26 @@ def ReadConFile():
 				global logpath
 				logpath = array[1].rstrip('\n')
 				print logpath
+				continue
+			if array[0] == 'newscoophost':
+				global newscoophost
+				newscoophost = array[1].rstrip('\n')
+				continue
+			if array[0] == 'newscooppass':
+				global newscooppass
+				newscooppass = array[1].rstrip('\n')
+				print newscooppass
+				continue
+			if array[0] == 'newscoopuser':
+				global newscoopuser
+				newscoopuser = array[1].rstrip('\n')
+				print newscoopuser
+				continue
+			if array[0] == 'newscoopdb':
+				global newscoopdb
+				newscoopdb = array[1].rstrip('\n')
+				print newscoopdb
+				continue
 		confile.close()
 	except:
 		print "Failed to read confile"
@@ -774,21 +799,19 @@ def isRecoveryStartup():
 		if count == 0:
 			return 0.0
 
-def CGWriteToFile(news):
+def CGWriteToFile(news, skipcmd=0):
 	global sock, cgupdate, cgrunning
 	'''CG 1 ADD 10 "AKCESS_CG/Templates/AKCESS" 1 "<templateData><componentData id=\"LoadXMLFile\"><data id=\"text\" value=\"C:\\Intro.axd\" /></componentData><componentData id=\"LoadLogo\"><data id=\"text\" value=\"C:/caspar.jpg\" /></componentData><componentData id=\"LoadBG_Strip\"><data id=\"text\" value=\"C:/BG_Strip.png\" /></componentData><componentData id=\"SetSpeed\"><data id=\"text\" value=\"5\" /></componentData><componentData id=\"SetFontSize\"><data id=\"text\" value=\"50\" /></componentData></templateData>\r\n
 '''
-	#if cgupdate == 0:
-	#	str = "CG 1 ADD 10 \"AKCESS_CG/Templates/AKCESS\" 1 "
-	#else:
 	if cgupdate == 1:
 		SendToServer(sock, "cg 1 remove 10\r\n")
 
-	f = open("C:\\Intro.axd","w")
+	f = open("C:\\Intro.axd", "w")
 	f.write(news)
 	f.close()
-	cgSendCmd(0)
-	cgrunning = True
+	if skipcmd == 0:
+		cgSendCmd(0)
+		cgrunning = True
 	
 def putSquzee():
 	global sock
@@ -975,11 +998,53 @@ def ReportHandler():
 								# we'll be blocking here, nevermind, we dont care. we'll be done when it's finished
 								s.send(item)
 								print "sending to client", item
-						#fromdate = NextDate(fromdate)
 				else:
 					# We are done now, we're not supposed to get any commands
 					s.close()
 					input.remove(s)
+
+'''
+%feeds - list containing all the news headlines.
+'''
+def PrepareNews(feeds):
+	import codecs
+	global header, footer
+	f = open("C:\\Intro.axd", "w")
+	head = unicode(header)
+	f.write(header)
+	for i in range(0, len(feeds)):
+		f.write("<ScrollData>\n<Story>\n" + feeds[i] + "</Story>\n</ScrollData>\n")
+	f.write(footer)
+	f.close()
+	cgSendCmd(0)
+
+def newsFetcher():
+	global newscoopdb, newscoophost, newscooppass, newscoopuser
+	time.sleep(10)	# allow main thread to initialize, otherwise client socket wont be available
+	
+	while True:
+		db = MySQLdb.connect(newscoophost, newscoopuser, newscooppass, newscoopdb, charset='utf8', use_unicode=True)
+		cursor = db.cursor()
+		tmp = time.localtime()
+		fdate = str(tmp.tm_year) + '-' + str(tmp.tm_mon) + '-' + str(tmp.tm_mday) + ' ' + '00:00:00'
+		tdate = str(tmp.tm_year) + '-' + str(tmp.tm_mon) + '-' + str(tmp.tm_mday) + ' ' + '23:59:59'
+		sql = "SELECT Name FROM Articles WHERE PublishDate BETWEEN " + '\'' + fdate + '\'' + ' AND ' + '\'' + tdate + '\''
+		print sql
+		newsfeeds = []
+		results = ''
+		try:
+			cursor.execute(sql)
+			results = cursor.fetchall()
+			print "Got Results of len: %d" % len(results)
+			tmp = ""
+			for r in results:
+				tmp = r[0].encode("utf-8", "replace")
+				newsfeeds.append(tmp)
+		except:
+			pass
+		db.close()
+		PrepareNews(newsfeeds)
+		time.sleep(300)	# change later
 
 if __name__ == "__main__":
 	initCSClient()
@@ -992,4 +1057,5 @@ if __name__ == "__main__":
 	CommercialTimes()
 	thread.start_new_thread(CG_Handler,())
 	thread.start_new_thread(ReportHandler,())
+	thread.start_new_thread(newsFetcher,())
 	playoutHandler(ret)
