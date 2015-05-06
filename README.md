@@ -3,7 +3,7 @@
 
 1. OVERVIEW:
 	CCGClient is designed to work as client for CasparCG playout server and a server for the modified
-Sysnova CasparCG Client. Unlink, other clients, CCGClient driven by MySQL database and this client will
+Sysnova CasparCG Client. Unlike, other clients, CCGClient driven by MySQL database and this client will
 work with multiple CasparCG server also. To do that it needs to be configured properly ie. the redundant 
 server should be configure as buddy server. As a prerequisite MySQL db needs to be installed on the server.
 This client assumes that some other client (our modified CasparCG Client) will create a playlist and will
