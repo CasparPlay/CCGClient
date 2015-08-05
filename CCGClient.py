@@ -70,9 +70,9 @@ def SendToServer(fd, cmd):
 	fd.send(cmd)
 
 def ConvertToSec(h, m, s):
-	print "ConvertToSec====>", h,m,s
+	#print "ConvertToSec====>", h,m,s
 	second = (int(h)*60*60)+(int(m)*60)+int(s)
-	print second
+	#print second
 	return second
 
 def clearCG():
@@ -171,7 +171,7 @@ def BuddyOscMsg(packet, filename):
 			return tret
 		ret += 4
 		tmpplaying = PickString(packet, ret)
-		print "tmpplaying, filename", tmpplaying, filename
+		#print "tmpplaying, filename", tmpplaying, filename
 		tmpplaying = tmpplaying.lower()
 		filename = filename.lower()
 		if tmpplaying.find(filename) == -1:
@@ -187,13 +187,13 @@ def BuddyOscMsg(packet, filename):
 			fval2, newindex = get_float(packet, index)
 			tret.append(fval)
 			tret.append(fval2)
-			print "%s is played %f of %f" % (tmpplaying, fval, fval2)
+			#print "%s is played %f of %f" % (tmpplaying, fval, fval2)
 			return tret
 
 # format h:m:s '12:12:01'
 # ct currenttime, st starttime
 def WaitTime(ct, st):
-	print ct, st
+	#print ct, st
 	try:
 		ch,cm,cs = ct.split(':')
 	except:
@@ -212,7 +212,7 @@ def WaitTime(ct, st):
 	if dm > 0:
 		totals += dm * 60
 	totals = totals + ds
-	print totals
+	#print totals
 	return totals
 
 def UpdateBuddyDb(name, state):
@@ -260,7 +260,7 @@ OSCGetSleepTime - try to figure out %name's playout time via OSC
 def OSCGetSleepTime(name):
 	global oscsock
 	count = 10
-	print "Into OSCGetSleepTime"
+	#print "Into OSCGetSleepTime"
 	
 	while True:
 		data, addr = oscsock.recvfrom(512)
@@ -359,7 +359,7 @@ def playoutHandler(val):
 			starttime = starttime
 			diff = WaitTime(currtime, starttime)
 			t2 = time.time()
-			print "Waiting time", diff
+			#print "Waiting time", diff
 			scriptisrunning = 1
 			if diff > 0:
 				time.sleep(diff-(t2-t1))
@@ -377,12 +377,12 @@ def playoutHandler(val):
 			SendToServer(sock, pcmd)
 			UpdateDb(name, id, '1')
 			sleeptime = OSCGetSleepTime(name) #ConvertToSec(hour, min, sec)
-			print sleeptime
+			#print sleeptime
 			#entry = myplaylist[i+1].split('|')
 			try:
 				entry = myplaylist[1].split('|')
 				if entry[6] == '1' and sleeptime > 10:
-					print "NExt video is commercial"
+					#print "NExt video is commercial"
 					time.sleep(sleeptime-10)
 					PrepareBreakScroller()
 					cgSendCmd(1)
@@ -419,9 +419,9 @@ def playoutHandler(val):
 			if len(myplaylist) > 0:
 				#entry = myplaylist[1].split('|')
 				entry = myplaylist[0].split('|')
-				print "entry is:", entry[0]
+				#print "entry is:", entry[0]
 				if entry[6] == '1' and sleeptime > 10 and commercial == '0':
-					print "NExt video is commercial"
+					#print "NExt video is commercial"
 					time.sleep(sleeptime-10)
 					PrepareBreakScroller()
 					cgSendCmd(1)
@@ -462,7 +462,7 @@ def CheckBuddyPlayList():
 				global myplaylist
 				#print r[0], r[1]
 				tmp = r[0] +'|'+ str(r[1]) + '|' + str(r[2]) + '|' + str(r[3]) + '|' + str(r[4]) + '|' + str(r[5]) + '|' + str(r[6])
-				print tmp
+				#print tmp
 				myplaylist.append(tmp)
 		except:
 			isbuddydbrunning = False
@@ -488,7 +488,7 @@ def MergePlayList():
 		#tmpname, tmpid, tmptlength, tmpstarttime, tmpseek, tmplength = myplaylist[i].split("|")
 		try:
 			tmplist = myplaylist[i].split('|')
-			print "into merging ", myplaylist[i]
+			#print "into merging ", myplaylist[i]
 			for j in range(0, times):
 				if i == j:
 					continue
@@ -521,7 +521,7 @@ def AddTime(src, dst):
 	totalm = int(tmpsrc[1]) + int(tmpdst[1]) + totalm
 	totalh = int(tmpsrc[0]) + int(tmpdst[0])
 	ret = str(totalh)+':'+str(totalm)+':'+str(totals)+':'+'00'
-	print "AddTime ==> ", ret
+	#print "AddTime ==> ", ret
 	return ret
 
 def CommercialTimes():
@@ -553,7 +553,7 @@ def CommercialTimes():
 			total = '00:00:00:00'
 		else:
 			i = i + 1
-	print "commercial list = >", commercialtimelist
+	#print "commercial list = >", commercialtimelist
 	commercialtimelist.reverse()
 
 '''
@@ -570,10 +570,10 @@ def FetchPlayList(skipbuddy):
 	try:
 		cursor.execute(sql)
 		results = cursor.fetchall()
-		print "Got Results of len: %d" % len(results)
+		#print "Got Results of len: %d" % len(results)
 		for r in results:
 			tmp = r[0] + '|' + str(r[1]) + '|' + str(r[2]) + '|' + str(r[3]) + '|' + str(r[4]) + '|' + str(r[5]) + '|' + str(r[6])
-			print tmp
+			#print tmp
 			myplaylist.append(tmp)
 	except:
 		print "Failed To FetchPlayList From DB"
@@ -591,7 +591,7 @@ If already exist, skip silently, for now hardcode the
 username, pass, dbname
 '''
 def createtable():
-	print "serverparam %s %s %s %s" % (serverip, serverdbname, serverdbpass, serverdbuser)
+	#print "serverparam %s %s %s %s" % (serverip, serverdbname, serverdbpass, serverdbuser)
 	db = MySQLdb.connect(serverip, serverdbuser, serverdbpass, serverdbname)
 	cursor = db.cursor()
 	sql = "CREATE TABLE casparcg (vname CHAR(30) NOT NULL, vlength CHAR(15) NOT NULL)"
@@ -769,15 +769,15 @@ def isRecoveryStartup():
 	if isbuddydbrunning == False:
 		return 0.0
 	tmp = GetBuddyNowPlaying()
-	print "*************************", buddynowplaying
+	#print "*************************", buddynowplaying
 	if len(tmp) == 0:
 		return 0.0
 	buddynowplaying = tmp
 	if buddynowplaying == '':
-		print "*******************Not Recovery Startup"
+		#print "*******************Not Recovery Startup"
 		return 0.0
-	print "=========>>>buddy is playing", buddynowplaying
-	print "Waiting for OSC MSG"
+	#print "=========>>>buddy is playing", buddynowplaying
+	#print "Waiting for OSC MSG"
 	buddynowplaying, isbuddyplayingcommercial = buddynowplaying.split('|')
 	count = 10
 	while count > 0:
@@ -878,7 +878,7 @@ def GenerateFilename(fname):
 	else:
 		p = p + '-0' + str(t.tm_mday)'''
 	prefix += fname + ".log"
-	print "GenerateFilename ==>", prefix
+	#print "GenerateFilename ==>", prefix
 	return prefix
 
 def parseMessage(logf):
@@ -916,17 +916,17 @@ def GenerateReport(fdate):
 	#path = "log"
 	fname = GenerateFilename(fdate)
 	path = path + '\\' + fname
-	print "Invoking Generate Report => ", path
+	#print "Invoking Generate Report => ", path
 	rbuf = parseMessage(path)
 	if len(rbuf) == 0:
-		print "Nothing to Parse"
+		#print "Nothing to Parse"
 		return preparebuf
 
 	for i in range(0,len(rbuf)):
 		l = rbuf[i].split(' ')
 		line = l[1].strip(']') + '|' + l[7].split('=>')[1].strip('ffmpeg').strip('[').split('|')[0]+'\r\n'
 		preparebuf.append(line)
-		print "%s added" % (line)
+		#print "%s added" % (line)
 	return preparebuf
 	
 def GetDays(fdate, tdate):
